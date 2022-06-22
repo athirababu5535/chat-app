@@ -19,7 +19,7 @@ import Register from './screens/Register';
 // imports from user
 
 import Profile from './user/Profile';
-import Nothing from './nothing/Nothing';
+// import Nothing from './nothing/Nothing';
 
 
 function App() {

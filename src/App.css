@@ -110,8 +110,8 @@ section .form{
   display: flex;
 }
 .user-container{
-  width: 35%;
-  padding: 50px 100px;
+  width: 30%;
+  padding: 50px 75px;
   border-right: 1px solid var(--color-4);
   overflow-y: auto;
 }
@@ -119,7 +119,7 @@ section .form{
   display: none;
 }
 .chat-container{
-  width: 65%;
+  width: 70%;
 }
 
 
@@ -192,14 +192,13 @@ section .form{
 .chat-footer{
   position: absolute;
   bottom: 0;
-  padding: 20px 10px;
-  width: 100%;
-  height: 125px;
+  padding: 1%;
+  width: 95%;
+  margin: 0 auto;
 }
 footer{
   width: 90%;
   margin: 0 auto;
-  height: 100%;
   background: var(--color-1);
   border-radius: 30px;
 }
@@ -238,6 +237,10 @@ footer form button{
   display: none;
 }
 
+.me{
+  text-align: right;
+}
+
 .single-chat-container{
   background: var(--color-1);
   color: var(--color-4);
@@ -256,6 +259,10 @@ footer form button{
 .message-container{
   width: 100%;
 }
+.image-container{
+  width: 100%;
+  padding: 20px 10px;
+}
 .moment{
   width: 100%;
 }
@@ -270,20 +277,66 @@ ul{
   position: absolute;
   bottom: 70%;
 }
+ul li{
+  background: var(--color-1);
+  margin-bottom: 8px;
+  border-radius: 10%;
+  padding: 10px;
+}
+ul li:hover{
+  background: var(--color-6);
+}
 
 /* preview */
 .preview{
   position: absolute;
-  width: 95%;
-  height: 75%;
-  background: transparent;
+  width: 75%;
+  height: 100%;
   top: 6%;
+  left: 12%;
 }
-.preview-container{
-  width: 80%;
-  height: 90%;
-  background: var(--color-4);
-  position: absolute;
-  top: 5%;
-  left: 10%;
+.prevew-image-slick{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.previewImage{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.previewFile{
+  width: 100%;
+  height: 70vh;
+}
+.prevew-remove{
+  text-align: center;
+  margin-top: 9px;
+}
+@media only screen and (max-width: 680px){
+  .user-container{
+    width: 25%;
+    padding: 50px 100px;
+  }
+  .chat-container{
+    width: 70%;
+  }
+}
+@media only screen and (max-width: 640px){
+  .user-container{
+    width: 25%;
+    padding: 50px 5px;
+  }
+  .chat-container{
+    width: 80%;
+  }
+}
+@media only screen and (max-width: 360px){
+  .user-container{
+    width: 20%;
+    padding: 50px 5px;
+  }
+  .chat-container{
+    width: 80%;
+  }
 }
