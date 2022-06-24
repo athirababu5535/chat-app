@@ -20,7 +20,7 @@ import {
   onSnapshot,
   updateDoc,
 } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
 
 // imports from user
 
@@ -53,14 +53,14 @@ function ChatPage({ chat, id , User1, User2 }) {
     setData(msgs);
   });
 
-  //const to set sending items and set preview state
+  //const to set sending items and set preview
 
   const [images, setImage] = useState("");
   const [files, setFile] = useState("");
   const [audios, setAudio] = useState("");
   const [msg, setMsg] = useState("");
+  const [recordAudio,setRecord] = useState();
   const [preview, setPreview] = useState([]);
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -85,7 +85,7 @@ function ChatPage({ chat, id , User1, User2 }) {
           storage,
           `images/${new Date().getTime()} - ${file.name}`
         );
-        const snap = await uploadBytes(imageRef, file);
+        const snap = await uploadBytesResumable(imageRef, file);
         const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath));
         iurl.push(dlUrl);
         await updateDoc(doc(db,`messages/${id}`,"chat",id2),{
@@ -148,7 +148,6 @@ function ChatPage({ chat, id , User1, User2 }) {
     });
   };
 
-
   const handleDelete = async (e) => {}
 
   var Settings = {
@@ -159,15 +158,17 @@ function ChatPage({ chat, id , User1, User2 }) {
     slidesToShow: 1,
     slidesToScroll: 1,
   }
+  // console.log("recordAudio : ",setRecordAudio);
   return chat ? (
     <>
       <div className="chat">
         <div className="message-head">
           <div className="avatar-container-chat">
-            <Avatar
+            {chat.avatar ? <img src={chat.avatar} />
+            :<Avatar
               src={`https://avatars.dicebear.com/api/adventurer/${seed}.svg`}
               style={{ width: "100%", height: "100%" }}
-            />
+            />}
           </div>
           <div className="userinfo-container">
             <h1>{chat.name}</h1>
@@ -185,6 +186,7 @@ function ChatPage({ chat, id , User1, User2 }) {
         </div>
         <div className="chat-footer">
           <Footer
+            setRecord={setRecord}
             msg={msg}
             images={images}
             audios={audios}
@@ -219,6 +221,7 @@ function ChatPage({ chat, id , User1, User2 }) {
                 {preview.map((element,i)=>(
                   <div className="prevew-image-slick" key={i}>
                     <iframe
+                      title="Document"
                       className="previewFile"
                       src={element}
                       frameBorder="0"

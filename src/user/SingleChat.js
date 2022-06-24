@@ -16,6 +16,7 @@ function SingleChat({ datas, User1 }) {
             ? datas.file.map((element, i) => (
                 <iframe
                   key={i}
+                  title="Document"
                   src={element}
                   frameBorder="0"
                   scrolling="none"

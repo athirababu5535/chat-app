@@ -27,6 +27,7 @@ function Footer({
   filesUpload,
   setPreview,
   setImage,
+  setRecord,
 }) {
 
   // for set the dropdown of attachment
@@ -57,7 +58,6 @@ function Footer({
       }
     }
   };
-
   return (
     <>
       <footer>
@@ -121,7 +121,7 @@ function Footer({
               <img src={images.name} alt={images.name} />
             ) : (
               <audio controls>
-                <source src={audios} />
+                <source src={audios.name} />
               </audio>
             )
           ) : (
@@ -138,10 +138,12 @@ function Footer({
           {msg || audios || images || filesUpload ? (
             <button className="btn">send</button>
           ) : (
-            <Button>
+            // <Button>
+              <>
               <MicOff onClick={StopRecording} />
               <KeyboardVoice onClick={StartRecording} />
-            </Button>
+              </>
+            // </Button>
           )}
         </form>
       </footer>

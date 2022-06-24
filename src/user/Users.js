@@ -12,10 +12,12 @@ function Users({ user, handleSelect, id }) {
   return (
     <div className="userinfo" onClick={() => handleSelect(user)}>
       <div className="avatar-container">
-        <Avatar
+        {user.avatar?
+          <img src={user.avatar} alt="Profile" />
+        :<Avatar
           src={`https://avatars.dicebear.com/api/adventurer/${seed}.svg`}
           style={{ width: "100%", height: "100%" }}
-        />
+        />}
       </div>
       <div className="userinfo-container">
         <p>{user.name}</p>
