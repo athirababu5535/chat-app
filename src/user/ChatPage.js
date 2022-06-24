@@ -38,7 +38,16 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-function ChatPage({setRecord, recordAudio, chat, id, User1, User2, StopRecording, StartRecording }) {
+function ChatPage({
+  setRecord,
+  recordAudio,
+  chat,
+  id,
+  User1,
+  User2,
+  StopRecording,
+  StartRecording,
+}) {
   // useEffect to set avatar
   const [seed, setSeed] = useState("");
   useEffect(() => {
@@ -65,7 +74,6 @@ function ChatPage({setRecord, recordAudio, chat, id, User1, User2, StopRecording
   const [msg, setMsg] = useState("");
   const [preview, setPreview] = useState([]);
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const id2 =
@@ -82,7 +90,7 @@ function ChatPage({setRecord, recordAudio, chat, id, User1, User2, StopRecording
     setFile("");
     setAudio("");
     setPreview("");
-    setRecord("")
+    setRecord("");
     if (images) {
       console.log("success");
       images.map(async (file) => {
@@ -90,15 +98,40 @@ function ChatPage({setRecord, recordAudio, chat, id, User1, User2, StopRecording
           storage,
           `images/${new Date().getTime()} - ${file.name}`
         );
-        const snap = await uploadBytesResumable(imageRef, file);
-        const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath));
-        iurl.push(dlUrl);
-        await updateDoc(doc(db, `messages/${id}`, "chat", id2), {
-          media: iurl,
-        });
-        await updateDoc(doc(db, "lastmessage", id), {
-          media: iurl,
-        });
+        const uploadTask = uploadBytesResumable(imageRef, file);
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Upload is " + progress + "% done");
+            switch (snapshot.state) {
+              case "paused":
+                console.log("Upload is paused");
+                break;
+              case "running":
+                console.log("Upload is running");
+                break;
+            }
+          },
+          (error) => {
+            // Handle unsuccessful uploads
+            console.log(error.message)
+          },
+          async () => {
+            await getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              console.log("File available at", downloadURL);
+              iurl.push(downloadURL)
+            });
+            await updateDoc(doc(db, `messages/${id}`, "chat", id2), {
+              media: iurl,
+            });
+            await updateDoc(doc(db, "lastmessage", id), {
+              media: iurl,
+            });
+            console.log("haiii");
+          }
+        );
       });
     }
     if (files) {
