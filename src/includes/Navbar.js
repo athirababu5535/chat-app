@@ -5,7 +5,7 @@ import { Link , useNavigate } from "react-router-dom";
 
 import { auth, db } from "../firebase";
 import { signOut } from "firebase/auth";
-import { updateDoc, doc, collection, query, where, onSnapshot, getDoc } from "firebase/firestore";
+import { updateDoc, doc, collection, getDoc } from "firebase/firestore";
 
 // import from includes
 
@@ -44,7 +44,7 @@ const Navbar = () => {
           <>
             <Link to="/profile">
               <div className="nav-avatar-container">
-                {cuser.avatar ? <img src={cuser.avatar} />
+                {cuser.avatar ? <img src={cuser.avatar} alt="JustPic" />
                 :
                 <Avatar
                   src={`https://avatars.dicebear.com/api/adventurer/19999.svg`}

@@ -38,6 +38,11 @@ function SingleChat({ datas, User1 }) {
               <source src={datas.audio} />
             </audio>
           ) : null}
+          {datas.voiceNote ? (
+            <audio controls>
+            <source src={datas.voiceNote} />
+          </audio>
+          ): null}
         </div>
         <div className="moment">
           <small>loading...</small>

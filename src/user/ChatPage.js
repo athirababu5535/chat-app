@@ -20,7 +20,12 @@ import {
   onSnapshot,
   updateDoc,
 } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
+import {
+  getDownloadURL,
+  ref,
+  uploadBytes,
+  uploadBytesResumable,
+} from "firebase/storage";
 
 // imports from user
 
@@ -33,9 +38,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-
-function ChatPage({ chat, id , User1, User2 }) {
-
+function ChatPage({setRecord, recordAudio, chat, id, User1, User2, StopRecording, StartRecording }) {
   // useEffect to set avatar
   const [seed, setSeed] = useState("");
   useEffect(() => {
@@ -54,30 +57,32 @@ function ChatPage({ chat, id , User1, User2 }) {
   });
 
   //const to set sending items and set preview
+  // console.log("#############", recordAudio);
 
   const [images, setImage] = useState("");
   const [files, setFile] = useState("");
   const [audios, setAudio] = useState("");
   const [msg, setMsg] = useState("");
-  const [recordAudio,setRecord] = useState();
   const [preview, setPreview] = useState([]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const id2 =
-    User1 > User2
-      ? `${User1 + Timestamp.fromDate(new Date())}`
-      : `${User2 + Timestamp.fromDate(new Date())}`;
+      User1 > User2
+        ? `${User1 + Timestamp.fromDate(new Date())}`
+        : `${User2 + Timestamp.fromDate(new Date())}`;
 
-    let iurl=[];
-    let furl=[];
+    let iurl = [];
+    let furl = [];
     let aurl;
-    let vurl;
+    let recordUrl;
     setMsg("");
     setImage("");
     setFile("");
     setAudio("");
     setPreview("");
+    setRecord("")
     if (images) {
       console.log("success");
       images.map(async (file) => {
@@ -88,18 +93,18 @@ function ChatPage({ chat, id , User1, User2 }) {
         const snap = await uploadBytesResumable(imageRef, file);
         const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath));
         iurl.push(dlUrl);
-        await updateDoc(doc(db,`messages/${id}`,"chat",id2),{
-          media:iurl,
+        await updateDoc(doc(db, `messages/${id}`, "chat", id2), {
+          media: iurl,
         });
-        await updateDoc(doc(db,"lastmessage",id),{
-          media:iurl,
+        await updateDoc(doc(db, "lastmessage", id), {
+          media: iurl,
         });
-      })
+      });
     }
     if (files) {
       console.log("success");
       console.log(files);
-      files.map(async (element)=>{
+      files.map(async (element) => {
         const fileRref = ref(
           storage,
           `files/${new Date().getTime()} - ${element.name}`
@@ -107,13 +112,13 @@ function ChatPage({ chat, id , User1, User2 }) {
         const snap = await uploadBytes(fileRref, element);
         const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath));
         furl.push(dlUrl);
-        await updateDoc(doc(db,`messages/${id}`,"chat",id2),{
-          file:furl,
+        await updateDoc(doc(db, `messages/${id}`, "chat", id2), {
+          file: furl,
         });
-        await updateDoc(doc(db,"lastmessage",id),{
-          file:furl,
+        await updateDoc(doc(db, "lastmessage", id), {
+          file: furl,
         });
-      })
+      });
     }
     if (audios) {
       console.log("success");
@@ -125,7 +130,16 @@ function ChatPage({ chat, id , User1, User2 }) {
       const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath));
       aurl = dlUrl;
     }
-    await setDoc(doc(db, `messages/${id}/chat`,id2), {
+    if (recordAudio) {
+      const recordAudioRef = ref(
+        storage,
+        `Recordings/${new Date().getTime()} - ${recordAudio.name}`
+      );
+      const snap = await uploadBytes(recordAudioRef, recordAudio);
+      const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath));
+      recordUrl = dlUrl;
+    }
+    await setDoc(doc(db, `messages/${id}/chat`, id2), {
       msg,
       from: User1,
       to: User2,
@@ -133,9 +147,9 @@ function ChatPage({ chat, id , User1, User2 }) {
       media: iurl || "",
       file: furl || "",
       audio: aurl || "",
-      voiceNote: vurl || "",
+      voiceNote: recordUrl || "",
     });
-    
+
     await setDoc(doc(db, "lastmessage", id), {
       createdAt: Timestamp.fromDate(new Date()),
       msg,
@@ -144,11 +158,11 @@ function ChatPage({ chat, id , User1, User2 }) {
       media: iurl || "",
       file: furl || "",
       audio: aurl || "",
-      voiceNote: vurl || "",
+      voiceNote: recordUrl || "",
     });
   };
 
-  const handleDelete = async (e) => {}
+  const handleDelete = async (e) => {};
 
   var Settings = {
     dots: false,
@@ -157,18 +171,21 @@ function ChatPage({ chat, id , User1, User2 }) {
     autoplay: false,
     slidesToShow: 1,
     slidesToScroll: 1,
-  }
+  };
   // console.log("recordAudio : ",setRecordAudio);
   return chat ? (
     <>
       <div className="chat">
         <div className="message-head">
           <div className="avatar-container-chat">
-            {chat.avatar ? <img src={chat.avatar} />
-            :<Avatar
-              src={`https://avatars.dicebear.com/api/adventurer/${seed}.svg`}
-              style={{ width: "100%", height: "100%" }}
-            />}
+            {chat.avatar ? (
+              <img src={chat.avatar} alt="JustPic" />
+            ) : (
+              <Avatar
+                src={`https://avatars.dicebear.com/api/adventurer/${seed}.svg`}
+                style={{ width: "100%", height: "100%" }}
+              />
+            )}
           </div>
           <div className="userinfo-container">
             <h1>{chat.name}</h1>
@@ -186,7 +203,6 @@ function ChatPage({ chat, id , User1, User2 }) {
         </div>
         <div className="chat-footer">
           <Footer
-            setRecord={setRecord}
             msg={msg}
             images={images}
             audios={audios}
@@ -197,17 +213,26 @@ function ChatPage({ chat, id , User1, User2 }) {
             setMsg={setMsg}
             handleSubmit={handleSubmit}
             setPreview={setPreview}
+            StartRecording={StartRecording}
+            StopRecording={StopRecording}
+            recordAudio={recordAudio}
           />
         </div>
-        {images.length>0 ? (
+        {images.length > 0 ? (
           <div className="preview">
             <div className="preview-container">
               <Slider {...Settings}>
-                {preview.map((element,i)=>(
+                {preview.map((element, i) => (
                   <div className="prevew-image-slick" key={i}>
-                    <img src={element} alt="previewImage" className="previewImage" />
+                    <img
+                      src={element}
+                      alt="previewImage"
+                      className="previewImage"
+                    />
                     <div className="prevew-remove">
-                      <button className="btn" onClick={handleDelete}>Remove</button>
+                      <button className="btn" onClick={handleDelete}>
+                        Remove
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -215,10 +240,11 @@ function ChatPage({ chat, id , User1, User2 }) {
             </div>
           </div>
         ) : null}
-        {files.length>0?(<div className="preview">
+        {files.length > 0 ? (
+          <div className="preview">
             <div className="preview-container">
               <Slider {...Settings}>
-                {preview.map((element,i)=>(
+                {preview.map((element, i) => (
                   <div className="prevew-image-slick" key={i}>
                     <iframe
                       title="Document"
@@ -231,13 +257,16 @@ function ChatPage({ chat, id , User1, User2 }) {
                       overflow="hidden"
                     ></iframe>
                     <div className="prevew-remove">
-                      <button className="btn" onClick={handleDelete}>Remove</button>
+                      <button className="btn" onClick={handleDelete}>
+                        Remove
+                      </button>
                     </div>
                   </div>
                 ))}
               </Slider>
             </div>
-          </div>):null}
+          </div>
+        ) : null}
       </div>
     </>
   ) : (

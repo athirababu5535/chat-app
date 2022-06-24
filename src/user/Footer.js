@@ -14,7 +14,7 @@ import { Button } from "@mui/material";
 
 //  import from nothing/function
 
-import { StartRecording, StopRecording } from "../nothing/function";
+// import { StartRecording, StopRecording } from "../nothing/function";
 
 function Footer({
   msg,
@@ -25,9 +25,11 @@ function Footer({
   setAudio,
   setFile,
   filesUpload,
+  recordAudio,
   setPreview,
   setImage,
-  setRecord,
+  StartRecording,
+  StopRecording,
 }) {
 
   // for set the dropdown of attachment
@@ -58,6 +60,8 @@ function Footer({
       }
     }
   };
+
+  const [voice,setVoice] = useState(true);
   return (
     <>
       <footer>
@@ -135,15 +139,15 @@ function Footer({
             />
           )}
           {filesUpload.length > 0 ? null : null}
-          {msg || audios || images || filesUpload ? (
+          {msg || audios || images || filesUpload || recordAudio ? (
             <button className="btn">send</button>
           ) : (
-            // <Button>
-              <>
-              <MicOff onClick={StopRecording} />
+            <Button onClick={()=>setVoice(!voice)}>
+              {voice ? 
               <KeyboardVoice onClick={StartRecording} />
-              </>
-            // </Button>
+              :
+              <MicOff onClick={StopRecording} />}
+            </Button>
           )}
         </form>
       </footer>
