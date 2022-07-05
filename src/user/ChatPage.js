@@ -52,7 +52,7 @@ function ChatPage({
   const [seed, setSeed] = useState("");
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 5000));
-  }, []);
+  }, [chat]);
 
   const [data, setData] = useState("");
   const msgRef = collection(db, "messages", id, "chat");
@@ -71,11 +71,15 @@ function ChatPage({
   const [images, setImage] = useState("");
   const [files, setFile] = useState("");
   const [audios, setAudio] = useState("");
+  const [video, setVideo] = useState("");
   const [msg, setMsg] = useState("");
+  const [videoprogress,setProgressVideo] = useState(0);
+  const [progress,setProgress] = useState(0);
   const [preview, setPreview] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const id2 =
       User1 > User2
         ? `${User1 + Timestamp.fromDate(new Date())}`
@@ -84,13 +88,17 @@ function ChatPage({
     let iurl = [];
     let furl = [];
     let aurl;
+    let vurl;
     let recordUrl;
     setMsg("");
     setImage("");
     setFile("");
     setAudio("");
+    setVideo("");
     setPreview("");
     setRecord("");
+    setProgressVideo(0);
+    setProgress(0);
     if (images) {
       console.log("success");
       images.map(async (file) => {
@@ -104,15 +112,12 @@ function ChatPage({
           (snapshot) => {
             const progress =
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              setProgress(Math.round(progress))
+              // if(progress){
+                console.log("snapshot : ",snapshot);
+                console.log(snapshot.bytesTransferred,"-------",snapshot.totalBytes);
+              // }
             console.log("Upload is " + progress + "% done");
-            switch (snapshot.state) {
-              case "paused":
-                console.log("Upload is paused");
-                break;
-              case "running":
-                console.log("Upload is running");
-                break;
-            }
           },
           (error) => {
             // Handle unsuccessful uploads
@@ -129,10 +134,40 @@ function ChatPage({
             await updateDoc(doc(db, "lastmessage", id), {
               media: iurl,
             });
-            console.log("haiii");
           }
         );
       });
+    }
+    if (video) {
+      console.log("success");
+      const audioRef = ref(
+        storage,
+        `Video/${new Date().getTime()} - ${video.name}`
+      );
+      const uploadTask = uploadBytesResumable(audioRef,video);
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const videoprogress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setProgressVideo(Math.round(videoprogress));
+            // console.log(Math.round(progress));
+            },
+          (error) => {
+            console.log(error.message)
+          },
+          async () => {
+            await getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              console.log("File available at", downloadURL);
+              vurl = downloadURL
+            });
+            await updateDoc(doc(db, `messages/${id}`, "chat", id2), {
+              video: vurl,
+            });
+            await updateDoc(doc(db, "lastmessage", id), {
+              video: vurl,
+            });
+          }
+        );
     }
     if (files) {
       console.log("success");
@@ -181,6 +216,7 @@ function ChatPage({
       file: furl || "",
       audio: aurl || "",
       voiceNote: recordUrl || "",
+      video:vurl || "",
     });
 
     await setDoc(doc(db, "lastmessage", id), {
@@ -192,6 +228,9 @@ function ChatPage({
       file: furl || "",
       audio: aurl || "",
       voiceNote: recordUrl || "",
+      video:vurl || "",
+      isRecording : false,
+      isTyping:false
     });
   };
 
@@ -205,7 +244,8 @@ function ChatPage({
     slidesToShow: 1,
     slidesToScroll: 1,
   };
-  // console.log("recordAudio : ",setRecordAudio);
+
+
   return chat ? (
     <>
       <div className="chat">
@@ -230,18 +270,23 @@ function ChatPage({
         <div className="messages">
           {data
             ? data.map((datas, i) => (
-                <SingleChat key={i} datas={datas} User1={User1} />
+                <SingleChat key={i} videoprogress={videoprogress} progress={progress} preview={preview} datas={datas} User1={User1} />
               ))
             : null}
         </div>
         <div className="chat-footer">
           <Footer
+            User2={User2}
+            User1={User1}
+            id={id}
             msg={msg}
             images={images}
             audios={audios}
+            video={video}
             setImage={setImage}
             setAudio={setAudio}
             setFile={setFile}
+            setVideo={setVideo}
             filesUpload={files}
             setMsg={setMsg}
             handleSubmit={handleSubmit}

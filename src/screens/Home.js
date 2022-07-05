@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 // firebase imports
 
-import { collection , onSnapshot, query  , where } from "firebase/firestore";
+import { collection , doc, onSnapshot, query  , updateDoc, where } from "firebase/firestore";
 import { auth, db } from "../firebase";
 
 // imports from user
@@ -30,12 +30,13 @@ function Home() {
   const Mp3Recorder = new MicRecorder({
     bitRate: 128,
   });
-  const StartRecording = () => {
+  const StartRecording = async () => {
     Mp3Recorder.start()
       .then(() => {})
       .catch((e) => {
         console.log(e.message);
       });
+    await updateDoc(doc(db, "lastmessage" ,id) , { isRecording : true , from:User1 , to:User2});
   };
 
   const StopRecording = async () => {
@@ -58,9 +59,9 @@ function Home() {
   useEffect(() => {
     const userRef = collection(db, "users");
     const q = query(userRef, where("uid", "not-in", [auth.currentUser.uid]));
-    const unUser = onSnapshot(q, (querySnapshot) => {
+    const unUser = onSnapshot(q, (snap) => {
       let users = [];
-      querySnapshot.forEach((doc) => {
+      snap.forEach((doc) => {
         users.push(doc.data());
       });
       setUsers(users);
@@ -80,10 +81,11 @@ function Home() {
         <div className="user-container">
           {users.map((user) => (
             <Users
+              chat={chat}
               user={user}
               id={id}
               User1={User1}
-              User2={User2}
+              User2={chat.uid}
               key={user.uid}
               handleSelect={handleSelect}
             />

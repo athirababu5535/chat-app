@@ -1,10 +1,12 @@
+import { CachedSharp, Upload } from "@mui/icons-material";
 import React, { useEffect, useRef } from "react";
+import Moment from "react-moment";
 
-function SingleChat({ datas, User1 }) {
+function SingleChat({ datas, User1 , videoprogress , progress , preview }) {
   const scrollRef = useRef();
 
   useEffect(() => {
-    scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    scrollRef.current.scrollIntoView({behavior : "smooth"});
   }, [datas]);
 
   return (
@@ -29,6 +31,14 @@ function SingleChat({ datas, User1 }) {
           {datas?.media
             ? datas.media.map((element, i) => (
                 <div key={i} className="image-container">
+                  {progress? 
+                    progress !== 100 ? 
+                      <div className="video-upload">
+                        <img src={preview} />
+                        <center className="progress"><Upload/> {videoprogress}%</center>
+                      </div>
+                    :<img src={element} alt="Watsapp-Images" />
+                  :null}
                   <img src={element} alt="Watsapp-Images" />
                 </div>
               ))
@@ -39,13 +49,29 @@ function SingleChat({ datas, User1 }) {
             </audio>
           ) : null}
           {datas.voiceNote ? (
-            <audio controls>
+            <audio controls >
             <source src={datas.voiceNote} />
           </audio>
           ): null}
+          {videoprogress ?
+            videoprogress !== 100 ?
+              <div className="video-upload">
+                <video controls></video>
+                <center className="progress"><Upload/> {videoprogress}%</center>
+              </div>:
+                datas.video ? (
+                  <video controls style={{width:"100%"}}>
+                    <source src={datas.video} />
+                  </video>
+                ):null
+            : datas.video ? (
+              <video controls style={{width:"100%"}}>
+                <source src={datas.video} />
+              </video>)
+          :null}
         </div>
         <div className="moment">
-          <small>loading...</small>
+          <Moment fromNow>{datas.createdAt.toDate().toDateString()}</Moment>
         </div>
       </div>
     </div>

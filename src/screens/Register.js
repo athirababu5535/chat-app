@@ -26,7 +26,6 @@ function Register({data,setData,handleChange}) {
                 email,
                 password,
                 createdAt:Timestamp.fromDate(new Date()),
-                isTyping:false,
             });
             navigate("/");
         } catch (err) {

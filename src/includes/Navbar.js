@@ -25,7 +25,7 @@ const Navbar = () => {
         setCurrentuser(doc.data())
       })
     }
-  },[cuser.avatar]);
+  },[cuser?.avatar]);
 
   const handleSignout = async () => {
     await updateDoc(doc(db, "users", auth.currentUser.uid), {
@@ -44,7 +44,7 @@ const Navbar = () => {
           <>
             <Link to="/profile">
               <div className="nav-avatar-container">
-                {cuser.avatar ? <img src={cuser.avatar} alt="JustPic" />
+                {cuser?.avatar ? <img src={cuser.avatar} alt="JustPic" />
                 :
                 <Avatar
                   src={`https://avatars.dicebear.com/api/adventurer/19999.svg`}

@@ -352,6 +352,21 @@ ul li:hover{
   background: var(--color-6);
 }
 
+.video-upload{
+  width: 100%;
+  position: relative;
+}
+.video-upload video{
+  width: 100%;
+}
+.video-upload .progress{
+  position: absolute;
+  display: flex;
+  top: 40%;
+  left: 40%;
+}
+
+
 /* preview */
 .preview{
   position: absolute;
@@ -405,8 +420,3 @@ ul li:hover{
     width: 80%;
   }
 }
-
-
-
-/* nothing.... */
-.input-file{}

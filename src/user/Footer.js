@@ -5,24 +5,31 @@ import React, { useState } from "react";
 import {
   AttachFile,
   AudioFile,
+  Chat,
   InsertDriveFile,
   InsertPhoto,
   KeyboardVoice,
   MicOff,
+  VideoFile,
 } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
-//  import from nothing/function
 
-// import { StartRecording, StopRecording } from "../nothing/function";
 
 function Footer({
+  User1,
+  User2,
+  id,
   msg,
   images,
   audios,
+  video,
   setMsg,
   handleSubmit,
   setAudio,
+  setVideo,
   setFile,
   filesUpload,
   recordAudio,
@@ -60,7 +67,10 @@ function Footer({
       }
     }
   };
-
+  const handleTypeChange = async (e) => {
+    setMsg(e.target.value);
+    await updateDoc(doc(db,"lastmessage" ,id) , { isTyping:true , from:User1 , to:User2 });
+  }
   const [voice,setVoice] = useState(true);
   return (
     <>
@@ -111,6 +121,20 @@ function Footer({
                 style={{ display: "none" }}
               />
             </li>
+            <li>
+              <Button onClick={handleSelectUl}>
+                <label htmlFor="videoupload">
+                  <VideoFile style={{color:"gray"}} />
+                </label>
+              </Button>
+              <input
+                onChange={(e) => setVideo(e.target.files[0])}
+                type="file"
+                id="videoupload"
+                accept="video/*"
+                style={{ display: "none" }}
+              />
+            </li>
           </ul>
           <div className="file-drop">
             <Button>
@@ -120,26 +144,18 @@ function Footer({
               />
             </Button>
           </div>
-          {images.length > 0 || audios ? (
-            images ? (
-              <img src={images.name} alt={images.name} />
-            ) : (
-              <audio controls>
-                <source src={audios.name} />
-              </audio>
-            )
+          {images.length > 0 || audios ||video ? (
+            null
           ) : (
             <input
               type="text"
               placeholder="type message here...."
               value={msg}
-              onChange={(e) => {
-                setMsg(e.target.value);
-              }}
+              onChange={handleTypeChange}
             />
           )}
           {filesUpload.length > 0 ? null : null}
-          {msg || audios || images || filesUpload || recordAudio ? (
+          {msg || audios || images || filesUpload || recordAudio || video ? (
             <button className="btn">send</button>
           ) : (
             <Button onClick={()=>setVoice(!voice)}>
