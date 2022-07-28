@@ -2,26 +2,25 @@ import { Edit, KeyboardArrowRight, KeyboardVoice, Upload } from "@mui/icons-mate
 import { Button } from "@mui/material";
 import { doc, updateDoc } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
-import { ReactMediaRecorder, useReactMediaRecorder } from "react-media-recorder";
+// import { ReactMediaRecorder, useReactMediaRecorder } from "react-media-recorder";
 import { db } from "../firebase";
 
-function Message({text,img,voice,setVoice,setPreviewUrl,previewUrl,setImg,setText,id,handleSubmit}) {
-
+function Message({text,imgs,voice,setA,setPreviewUrl,previewUrl,setImg,setText,id,handleSubmit}) {
 
   const [file, setFile] = useState();
   const filePickeref = useRef();
 
-  useEffect(()=>{
-      if(!file){
-          return;
-      }
-      const fileReader = new FileReader();
-      fileReader.onload = () => {
+    useEffect(()=>{
+        if(!file){
+            return;
+        }
+        const fileReader = new FileReader();
+        fileReader.onload = () => {
         setPreviewUrl(fileReader.result);
-      };
-      fileReader.readAsDataURL(file);
-
-  },[file])
+        };
+        fileReader.readAsDataURL(file);
+    },[file])
+    console.log(imgs);
 
     function pickerHandler(event){
         let pickedFile;
@@ -42,16 +41,16 @@ function Message({text,img,voice,setVoice,setPreviewUrl,previewUrl,setImg,setTex
     }
 
     const [recording,setRecording] = useState(true);
-    const { startRecording,stopRecording,mediaBlobUrl } = useReactMediaRecorder({ audio: true });
-    const recordAudio = () => {
-        if (recording) {
-            setRecording(false);
-        } else {
-            setRecording(true);
-            setVoice(mediaBlobUrl);
-            console.log(mediaBlobUrl);
-        }
-    };
+    // const { startRecording,stopRecording,mediaBlobUrl } = useReactMediaRecorder({ audio: true });
+    // const recordAudio = () => {
+    //     if (recording) {
+    //         setRecording(false);
+    //     } else {
+    //         setRecording(true);
+    //         setVoice(mediaBlobUrl);
+    //         console.log(mediaBlobUrl);
+    //     }
+    // };
   return (
     <>
         <form className="form-control center" onSubmit={handleSubmit}>
@@ -67,7 +66,7 @@ function Message({text,img,voice,setVoice,setPreviewUrl,previewUrl,setImg,setTex
                                 <div className="container">
                                     {voice ? 
                                         <audio controls autoPlay className="audio">
-                                            <source src={mediaBlobUrl}/>
+                                            {/* <source src={mediaBlobUrl}/> */}
                                         </audio>
                                         :<input className="text-message-input"
                                             type="text"
@@ -84,7 +83,7 @@ function Message({text,img,voice,setVoice,setPreviewUrl,previewUrl,setImg,setTex
                                             </div>
                                             :
                                             <>
-                                                <Button onClick={recordAudio}>
+                                                {/* <Button onClick={recordAudio}>
                                                     {recording?
                                                         <Button>
                                                             <KeyboardVoice onClick={startRecording} />
@@ -94,7 +93,7 @@ function Message({text,img,voice,setVoice,setPreviewUrl,previewUrl,setImg,setTex
                                                             <KeyboardVoice onClick={stopRecording} style={{color:"red"}} />
                                                         </Button>
                                                     }
-                                                </Button>
+                                                </Button> */}
                                             </>
                                         }
                                     </div>

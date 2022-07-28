@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { collection , query , where , onSnapshot, addDoc, Timestamp, orderBy, setDoc, doc, updateDoc } from "firebase/firestore";
 import { auth, db, storage } from "../firebase";
-import Users from "../include/Users";
+import Users from "../include/Useurs";
 import Message from "../include/Message";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import Messages from "../include/Messages";
@@ -115,8 +115,8 @@ function HomePage(){
                                 </div>
                             </div>
                             <div className="messages">
-                                {msgs?.length ? 
-                                    msgs?.map((msg , i) => <Messages id={id} key={i} msg={msg} User1={User1} chat={chat} User2={User2} />)
+                                {msgs.length ? 
+                                    msgs.map((msg , i) => <Messages id={id} key={i} msg={msg} User1={User1} chat={chat} User2={User2} />)
                                 :null}
                             </div>
                             <Message previewUrl={previewUrl} setPreviewUrl={setPreviewUrl} id={id} img={img} text={text} handleSubmit={handleSubmit} setText={setText} setImg={setImg} voice={voice} setVoice={setVoice} img={img} />

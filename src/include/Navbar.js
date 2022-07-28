@@ -5,11 +5,9 @@ import { signOut } from "firebase/auth";
 import { updateDoc , doc, getDoc } from "firebase/firestore";
 import { AuthContext } from "../context/Auth";
 function Navbar(){
-    // const User1 = auth.currentUser.uid;
     const [userid,setUser]=useState();
-
     const navigate = useNavigate();
-    const {user} = useContext(AuthContext);
+    const user = useContext(AuthContext);
 
     const handleSignout = async (e) =>{
         e.preventDefault();
@@ -19,15 +17,16 @@ function Navbar(){
         await signOut(auth);
         navigate("/login");
     }
-        useEffect(()=>{
-            if(user){
-                getDoc(doc(db , "users" , auth.currentUser.uid)).then( docSnap => {
-                    if(docSnap.exists){
-                        setUser(docSnap.data())
-                    }
-                } )
-            }
-        },[user])
+    useEffect(()=>{
+        if(user && auth.currentUser){
+            console.log(user, auth.currentUser,"auth.currentUserauth.currentUser")
+            getDoc(doc(db , "users" , auth.currentUser.uid)).then( docSnap => {
+                if(docSnap.exists){
+                    setUser(docSnap.data())
+                }
+            } )
+        }
+    },[user])
 
     // console.log(userid);
     return(
@@ -38,9 +37,9 @@ function Navbar(){
                 {user ? 
                         <>
                             <Link to="/profile">
-                            <div className="user_details">
-                                <img src={ userid?.avatar || require("../Images/image1.jpeg")} alt="Avatar" className="avatar" />
-                            </div>
+                            {/* <div className="user_details">
+                                <img src={ userid.avatar ? userid.avatar : require("../Images/image1.jpeg")} alt="Avatar" className="avatar" />
+                            </div> */}
                             </Link>
                             <button className="btn" onClick={handleSignout}>Logout</button>
                         </>:
